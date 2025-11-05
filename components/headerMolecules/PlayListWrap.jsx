@@ -3,7 +3,7 @@ import PortfolioMix from "../headerAtom/PortfolioMix";
 
 const PlayListWrap = () => {
   return (
-    <div className="flex justify-center items-center gap-2">
+    <div className="flex justify-center items-center gap-5">
       <PlayList />
       <PortfolioMix />
     </div>
