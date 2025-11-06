@@ -2,9 +2,11 @@
 
 import { motion, AnimatePresence } from "framer-motion"; // ✅ framer-motion에서 가져오기
 import { Music } from "lucide-react";
-import DancingCouple from "./DancingCouple";
+import { useState } from "react";
+import PlayBtn from "./turntable/PlayBtn";
 
-export default function Turntable({ isPlaying, isCompact, currentSection }) {
+export default function Turntable({ isCompact, currentSection }) {
+  const [isPlaying, setIsPlaying] = useState(false);
   return (
     <motion.div
       initial={false}
@@ -122,12 +124,10 @@ export default function Turntable({ isPlaying, isCompact, currentSection }) {
             className="absolute inset-0 rounded-lg bg-purple-500/20 blur-xl -z-10"
           />
         </motion.div>
-
-        {/* 💃 Dancing Couple */}
-        <AnimatePresence mode="wait">
-          {currentSection && <DancingCouple section={currentSection} />}
-        </AnimatePresence>
       </div>
+
+      {/* 재생 버튼 */}
+      <PlayBtn isPlaying={isPlaying} setIsPlaying={setIsPlaying} />
     </motion.div>
   );
 }

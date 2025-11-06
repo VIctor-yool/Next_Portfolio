@@ -1,5 +1,5 @@
-import PlayListWrap from "./headerMolecules/PlayListWrap";
-import UList from "./headerMolecules/UList";
+import PlayListWrap from "./header/headerMolecules/PlayListWrap";
+import UList from "./header/headerMolecules/UList";
 
 // components/Header.jsx
 export default function Header() {

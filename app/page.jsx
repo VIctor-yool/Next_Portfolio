@@ -1,83 +1,108 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import LoadingScreen from "@/components/LoadingScreen";
 import OpeningAnimation from "@/components/OpeningAnimation";
 import Turntable from "@/components/Turntable";
-import DancingCouple from "@/components/DancingCouple"; // 👈 추가
+import TrackSection from "@/components/Track/trackorganism/TrackSection";
 
 export default function Page() {
-  const [stage, setStage] = useState("loading"); // ✅ 처음은 로딩부터 시작
+  const [stage, setStage] = useState("loading");
   const [isPlaying, setIsPlaying] = useState(false);
-  const [section, setSection] = useState("home"); // 👈 DancingCouple용
 
   useEffect(() => {
     if (stage === "loading") {
-      // 3초간 로딩 → 오프닝으로 전환
-      const t1 = setTimeout(() => setStage("opening"), 3000);
-      return () => clearTimeout(t1);
+      const timer1 = setTimeout(() => setStage("opening"), 2000);
+      return () => clearTimeout(timer1);
     }
     if (stage === "opening") {
-      // 오프닝 2.5초 후 → 메인 전환
-      const t2 = setTimeout(() => setStage("ready"), 2500);
-      return () => clearTimeout(t2);
+      const timer2 = setTimeout(() => setStage("ready"), 2500);
+      return () => clearTimeout(timer2);
     }
   }, [stage]);
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Stage: Loading */}
-      {stage === "loading" && <LoadingScreen />}
+    <div className="relative min-h-screen overflow-hidden text-white">
+      {/* 🌌 메인 페이지 전용 배경 (layout에는 없음) */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 1 }}
+        className="absolute inset-0 bg-gradient-to-br from-purple-900 via-black to-indigo-900"
+      >
+        {/* 배경에 움직이는 별/입자 효과 */}
+        {[...Array(40)].map((_, i) => (
+          <motion.div
+            key={i}
+            animate={{
+              y: [Math.random() * 800, -100],
+              x: [Math.random() * 1200, Math.random() * 1200],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: 8 + Math.random() * 8,
+              repeat: Infinity,
+              delay: Math.random() * 5,
+            }}
+            className="absolute w-1 h-1 bg-purple-400/30 rounded-full"
+          />
+        ))}
+      </motion.div>
 
-      {/* Stage: Opening */}
-      {stage === "opening" && (
-        <OpeningAnimation onComplete={() => setStage("ready")} />
-      )}
+      {/* 🎬 Stage: Loading */}
+      <AnimatePresence>
+        {stage === "loading" && (
+          <motion.div
+            key="loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <LoadingScreen />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Stage: Main */}
-      {stage === "ready" && (
-        <>
-          {/* 🎵 턴테이블 */}
-          <Turntable isPlaying={isPlaying} isCompact={false} />
+      {/* 🎞️ Stage: Opening */}
+      <AnimatePresence>
+        {stage === "opening" && (
+          <motion.div
+            key="opening"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <OpeningAnimation onComplete={() => setStage("ready")} />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-          {/* 💃 춤추는 커플 */}
-          <DancingCouple section={section} />
+      {/* 🌠 Stage: Main */}
+      <AnimatePresence>
+        {stage === "ready" && (
+          <motion.div
+            key="main"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="relative min-h-screen flex flex-col items-center justify-center z-10"
+          >
+            {/* 🎛️ 턴테이블 */}
+            <Turntable isPlaying={isPlaying} isCompact={false} />
 
-          {/* 💬 메인 콘텐츠 */}
-          <section className="container mx-auto px-4 py-8 text-center relative z-10">
-            <h1 className="text-4xl font-bold mb-4">Welcome</h1>
-            <p className="text-gray-300 mb-6">
-              This is a simple Next.js + Tailwind + Motion UI demo (JSX, no
-              TypeScript).
-            </p>
-
-            {/* 재생 버튼 */}
-            <button
-              onClick={() => setIsPlaying((p) => !p)}
-              className="px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
-            >
-              {isPlaying ? "Pause" : "Play"}
-            </button>
-
-            {/* 섹션 변경 버튼 */}
-            <div className="mt-8 space-x-3">
-              {["home", "about", "projects", "skills", "contact"].map((sec) => (
-                <button
-                  key={sec}
-                  onClick={() => setSection(sec)}
-                  className={`px-4 py-1 rounded-full border ${
-                    section === sec
-                      ? "bg-purple-600 border-purple-400"
-                      : "border-gray-500 hover:bg-gray-800"
-                  }`}
-                >
-                  {sec.charAt(0).toUpperCase() + sec.slice(1)}
-                </button>
-              ))}
-            </div>
-          </section>
-        </>
-      )}
+            {/* 🎵 트랙 섹션 */}
+            <section className="container mx-auto px-4 py-8 text-center relative z-10">
+              <TrackSection />
+            </section>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
